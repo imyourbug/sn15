@@ -3,11 +3,11 @@ Your goal is to determine if the provided LLM response is relevant to the user's
     You should disregard whether the response is factually accurate or not and only be concerned with relevance. 
 
 In this task, I will provide you with the following:
-- User Query: the question asked by the user
-- LLM Response: a response to the user derived from an input context
+- User Query: question asked by the user
+- LLM Response: response to the user derived from an input context
 
 
-You should return a score of 0 if the response is not relevant and a score of 1 if the response is relevant.
+You should return a score of 0 if the response is not relevant and 1 if the response is relevant.
 
 # User Query
 {query}
@@ -28,9 +28,9 @@ In this task, I will provide you with the following:
 - LLM Response: a series of claims derived from the RAG context
 
 You should return a score between 0 and 1 based on how accurate you perceive the claims to be. \
-- If the response does not hallucinate at all then return a value of 1
-- If the entire response is hallucinated then return a value of 0
-- if half of the response is hallucinated then return a score of 0.5
+- If the response does not hallucinate at all then return 1
+- If the entire response is hallucinated then return 0
+- if half of the response is hallucinated then return 0.5
 
 # RAG Context
 {rag_context}
@@ -78,9 +78,9 @@ For example, if the RAG context says that Person A must achieve Task 1, but the 
 then this would be a misattribution
 
 You should return a score between 0 and 1 based on how accurate you perceive the attributions to be. \
-- If the response attributes action items with complete accuracy  then return a value of 1
-- If the entire response is misattributed then return a value of 0
-- if half of the response is misattributed then return a score of 0.5
+- If the response attributes action items with complete accuracy then return 1
+- If the entire response is misattributed then return 0
+- if half of the response is misattributed then return 0.5
 
 # RAG Context
 {rag_context}
@@ -131,9 +131,9 @@ In this task, I will provide you with the following:
 For example, if the RAG context contains important information that should be summarized then this would be considered an incomplete summary.
 
 You should return a score between 0 and 1 based on how accurate you perceive the claims to be. \
-- If the response is a perfect summary of the RAG context then return a value of 1
-- If the response is missing all important information from RAG context then return a value of 0
-- if the response is missing half of the important information from the RAG context then return a score of 0.5
+- If the response is a perfect summary of the RAG context then return 1
+- If the response is missing all important information from RAG context then return 0
+- if the response is missing half of the important information from the RAG context then return 0.5
 
 # RAG Context
 {rag_context}

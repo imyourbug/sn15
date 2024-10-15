@@ -67,7 +67,6 @@ class OpenAIMiner(Miner):
         self.model = OpenAI(api_key=API_KEY)
 
         self.system_prompt = "You are LLM evaluator. Your goal is to respond to the evaluation question with a score between 0 and 1, where 1 signifies fully accurate and 0 signifies completely inaccurate."
-        
 
     def set_parameters(self) -> None:
         self.model_id = self.config.neuron.model_id
@@ -105,10 +104,10 @@ class OpenAIMiner(Miner):
         if match:
             score = match.group(1)
             print("score ", score)
-            return float(score.strip()) if score != "" else -1.0
+            return float(score.strip()) if score != "" else 1.0
         else:
             bt.logging.debug("Unable to parse response")
-            return -1.0
+            return 0.0
 
     def compute_eval_score(
         self, 
@@ -120,7 +119,7 @@ class OpenAIMiner(Miner):
 
         prompt = prompt.format(rag_context = rag_context, query = query, llm_response = llm_response)
         messages = [{"content": prompt, "role": "user"}]
-            
+
         output = self.model.chat.completions.create(
             model=self.model_id,
             messages=messages,
@@ -154,7 +153,6 @@ class OpenAIMiner(Miner):
         )
         response = output.choices[0].message.content
         return self.parse_mistakes_response(response)
-        
 
     async def forward(self, synapse: EvalSynapse) -> EvalSynapse:
         """
@@ -180,10 +178,16 @@ class OpenAIMiner(Miner):
             llm_response = synapse.llm_response
 
             # generate our prompt and format
+            print(f"INFO task: {task}")
             prompts = self.select_task_prompt(task)
-            
+            print(f"INFO prompts: {prompts}")
+
             # generate our response and return
             score_prompt = prompts.get("score")
+            print(f"INFO rag_context: {rag_context}")
+            print(f"INFO query: {query}")
+            print(f"INFO llm_response: {llm_response}")
+
             score_completion = self.compute_eval_score(score_prompt, rag_context, query, llm_response)
             bt.logging.info(f"eval score completion: {score_completion}")
             synapse.completion = score_completion
@@ -193,12 +197,11 @@ class OpenAIMiner(Miner):
                 _ = synapse.mistakes
                 bt.logging.info(f"Successfully identified synapse as having mistakes field. Continuing")
                 mistakes_prompt = prompts.get("mistakes", None)
-                
+
                 # we do not evaluate for all tasks
                 if mistakes_prompt:
                     mistakes_completion = self.extract_mistakes(mistakes_prompt, rag_context, llm_response)
                     bt.logging.info(f"eval score completion: {mistakes_completion}")
-                    print(f"eval score completion: {mistakes_completion}")
                     synapse.mistakes = mistakes_completion
             except:
                 bt.logging.info(f"Synapse does not have mistakes field. Skipping.")
@@ -210,7 +213,7 @@ class OpenAIMiner(Miner):
             return synapse
         except Exception as e:
             bt.logging.error(f"Error in forward: {e}")
-            synapse.completion = -1.0
+            synapse.completion = 1.0
         finally:
             if self.config.neuron.stop_on_forward_exception:
                 self.should_exit = True
