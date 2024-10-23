@@ -210,7 +210,7 @@ def add_miner_args(cls, parser):
     parser.add_argument(
         "--neuron.temperature",
         type=float,
-        default=0.7,
+        default=0.3,
         help="Sampling temperature to use, between 0 and 2.",
     )
 
@@ -224,7 +224,7 @@ def add_miner_args(cls, parser):
     parser.add_argument(
         "--neuron.top_p",
         type=float,
-        default=0.95,
+        default=0.8,
         help="Nucleus sampling parameter, top_p probability mass.",
     )
 

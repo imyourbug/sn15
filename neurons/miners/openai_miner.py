@@ -66,6 +66,7 @@ class OpenAIMiner(Miner):
 
         # Set openai key and other args
         self.model = OpenAI(api_key=API_KEY)
+        print(f"API_KEY: {API_KEY}")
 
         self.system_prompt = "You are LLM evaluator. Your goal is to respond to the evaluation question with a score between 0 and 1, where 1 signifies fully accurate and 0 signifies completely inaccurate."
 
@@ -73,8 +74,8 @@ class OpenAIMiner(Miner):
         self.model_id = self.config.neuron.model_id
 
         self.max_tokens = self.config.neuron.max_tokens or 10
-        self.temperature = self.config.neuron.temperature or 0.5
-        self.top_p = self.config.neuron.top_p or 0.95
+        self.temperature = self.config.neuron.temperature or 0.3
+        self.top_p = self.config.neuron.top_p or 0.8
         self.top_k = self.config.neuron.top_k or 0
 
     def select_task_prompt(self, task: str) -> dict[str, str]:
